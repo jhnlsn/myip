@@ -15,22 +15,23 @@ func ip(w http.ResponseWriter, req *http.Request) {
 }
 
 func main() {
-	// (&cli.App{}).Run(os.Args)
-
 	app := &cli.App{
 		Name: "Simple ip server",
-		Usage: "fight the loneliness!",
-		// Action: func(c *cli.Context) error {
-		// 	fmt.Println("Hello friend!")
-		// 	return nil
-		// },
+		Usage: "Simple server to discover public IP address",
 		Commands: []*cli.Command{
 			&cli.Command{
 				Name: "server",
 				Action: func(c *cli.Context) error {
+					log.Println("Starting server on port:", c.String("port"))
 					http.HandleFunc("/ip", ip)
-					http.ListenAndServe(":8080", nil)
+					http.ListenAndServe(":" + c.String("port"), nil)
 					return nil
+				},
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name: "port",
+						Value: "8080",
+					},
 				},
 			},
 			&cli.Command{
@@ -41,12 +42,6 @@ func main() {
 				},
 			},
 		},
-		// Name: "server",
-		// Usage: "Start IP response server",
-		// Action: func(c *cli.Context) error {
-		// 	http.HandleFunc("/ip", ip)
-		// 	http.ListenAndServe(":8080", nil)
-		// }
 	}
 
 	err := app.Run(os.Args)
